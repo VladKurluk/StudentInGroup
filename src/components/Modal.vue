@@ -61,6 +61,58 @@
         </footer>
       </div>  
     </form>
+
+    <form v-if="editData">
+      <div class="modal-card" style="width: auto">
+        <header class="modal-card-head">
+          <p v-if="editData.row.email" class="modal-card-title">Edit student</p>
+          <p v-else class="modal-card-title">Edit course</p>
+        </header>
+        <section class="modal-card-body">
+          <b-field label="Course Name" v-if="editData.row.course_name">
+            <b-input type="text" v-model="editData.row.course_name" :value="editData.course_name"
+              placeholder="Course Name" required>
+            </b-input>
+          </b-field>
+
+          <b-field label="Course Code" v-if="editData.row.course_code">
+            <b-input type="text" v-model="editData.row.course_code" :value="editData.course_code"
+              placeholder="Course Code" required>
+            </b-input>
+          </b-field>
+
+          <b-field label="First Name" v-if="editData.row.first_name">
+            <b-input type="text" v-model="editData.row.first_name" :value="editData.row.first_name"
+              placeholder="Your first name" required>
+            </b-input>
+          </b-field>
+
+          <b-field label="Last Name" v-if="editData.row.last_name">
+            <b-input type="text" v-model="editData.row.last_name" :value="editData.row.last_name"
+              placeholder="Your last name" required>
+            </b-input>
+          </b-field>
+
+          <b-field label="Email" v-if="editData.row.email">
+            <b-input type="email" v-model="editData.row.email" :value="editData.row.email"
+              placeholder="Your email" required>
+            </b-input>
+          </b-field>
+
+          <b-field label="Course" v-if="editData.row.course">
+            <b-input type="text" v-model="editData.row.course" :value="editData.row.course"
+              placeholder="Course" required>
+            </b-input>
+          </b-field>
+        </section>
+        <footer class="modal-card-foot">
+          <!-- <button class="button" type="button" @click="$parent.close()">Close</button> -->
+          <button v-if="editData.row.email" class="button is-primary" @click.prevent="addStudent">Edit student</button>
+          <button v-else class="button is-primary" @click.prevent="addCourse">Edit course</button>
+        </footer>
+      </div>  
+    </form>
+
   </b-modal>
 </template>
 
@@ -76,18 +128,28 @@ export default {
     courseData: {
       course_name: '', 
       course_code: ''
-    }
+    },
+    modalToggle: false
   }),
-  props: ['modalState', 'actionType'],
+  props: ['modalState', 'actionType', 'editData'],
+  /* computed: {
+    toggleModal: function (modalState) {
+      this.modalToggle = this.modalState
+    }
+  }, */
   methods: {
     addStudent () {
       this.$emit('add', this.formData)
-      this.modalState = false
+      this.modalToggle = false
     },
     addCourse () {
       this.$emit('add', this.courseData)
-      this.modalState = false
+      this.modalToggle = false
+
     },
+  },
+  mounted () {
+    console.log(this.modalState)
   }
 }
 </script>
