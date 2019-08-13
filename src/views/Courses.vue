@@ -1,21 +1,26 @@
 <template>
   <div class="courses">
+
+    <control 
+      :table-title="'Courses'" 
+      @pgItem="pgValue" 
+      @search="searchInTable" />
+
     <course-table 
-      :tableType="'Courses'"
-      @createTableRow="test" 
+      :pgCount="paginationItem"
+      :searchParam="searchQuery"
       :data="data"/>
 
     <add-course-modal 
-      :modalState="isAddCourseModal"
       :actionType="'course'" 
       @add="addCourse" />
-
     
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
+import control from '@/components/Control.vue'
 import CourseTable from '@/components/Table.vue'
 import addCourseModal from '@/components/Modal.vue'
 
@@ -35,24 +40,29 @@ const data = [
 ]
 
 export default {
-  name: 'Students',
+  name: 'Courses',
   components: {
+    control,
     CourseTable,
     addCourseModal
   },
   data() {
     return {
       data,
-      isAddCourseModal: false
+      paginationItem: 0,
+      searchQuery: '',
     }
   },
   methods: {
     addCourse (course) {
       this.data.push(course)
+      console.log(course)
     },
-    test () {
-      this.isAddCourseModal = true
-      // console.log(data)
+    pgValue (data) {
+      this.paginationItem = data
+    },
+    searchInTable (data) {
+      this.searchQuery = data
     }
   }
 }
@@ -64,14 +74,5 @@ export default {
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
-}
-
-.control-panel {
-  display: flex;
-  justify-content: space-between;
-
-  &__left {
-    display: flex;
-  }
 }
 </style>

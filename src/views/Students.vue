@@ -1,23 +1,26 @@
 <template>
   <div class="students">
 
-    <student-table 
-      :tableType="'Students'" 
-      @createTableRow="test" 
-      :data="data"
-      />
+    <control 
+      :table-title="'Students'" 
+      @pgItem="pgValue"
+      @search="searchInTable" />
 
-      <add-student-modal 
-        :modalState="isAddStudentModal"
-        :actionType="'student'" 
-        @add="addStudent"
-      />
+    <student-table
+      :pgCount="paginationItem"
+      :searchParam="searchQuery"
+      :data="data" />
+
+    <add-student-modal 
+      :actionType="'student'" 
+      @add="addStudent" />
     
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
+import control from '@/components/Control.vue'
 import StudentTable from '@/components/Table.vue'
 import addStudentModal from '@/components/Modal.vue'
 
@@ -45,22 +48,26 @@ const data = [
 export default {
   name: 'Students',
   components: {
+    control,
     StudentTable,
     addStudentModal,
   },
   data() {
     return {
       data,
-      isAddStudentModal: false,
+      paginationItem: 0,
+      searchQuery: ''
     }
   },
   methods: {
     addStudent (student) {
       this.data.push(student)
     },
-    test () {
-      this.isAddStudentModal = true
-      console.log('Вызови модалку')
+    pgValue (data) {
+      this.paginationItem = data
+    },
+    searchInTable (data) {
+      this.searchQuery = data
     }
   }
 }
@@ -73,12 +80,4 @@ export default {
   margin: 0 auto;
 }
 
-.control-panel {
-  display: flex;
-  justify-content: space-between;
-
-  &__left {
-    display: flex;
-  }
-}
 </style>

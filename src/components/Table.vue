@@ -1,42 +1,9 @@
 <template>
   <div>
-    <div class="control-panel">
-      <div class="control-panel__left">
-        <b-button 
-          rounded
-          class="add-btn"
-          @click="isEditModal = !isEditModal" 
-          type="is-danger" 
-          icon-pack="fas" 
-          icon-right="plus"></b-button>
-
-        <b-field>
-          <b-input placeholder="Search..."
-            rounded
-            v-model="searchQuery"
-            size="is-small"
-            type="search"
-            icon-pack="fas"
-            icon="search">
-          </b-input>
-        </b-field>
-      </div>
-
-      <h1>{{tableType}}</h1>
-
-      <b-field>
-        <b-select v-model="perPage" placeholder="Select a character" rounded>
-          <option value="2">2</option>
-          <option value="5">5</option>
-          <option value="10">10</option>
-        </b-select>
-      </b-field>
-    </div>
-
     <b-table 
       :data="isEmpty ? [] : search"
       :paginated="isPaginated"
-      :per-page="perPage"
+      :per-page="!pgCount ? perPage : pgCount"
       :current-page.sync="currentPage"
       :pagination-simple="isPaginationSimple"
       :pagination-position="paginationPosition" 
@@ -99,7 +66,7 @@
       </template>
     </b-table>
 
-    <edit-modal :modalState="isEditModal" :editData="tableRowEditable" />
+    <edit-modal :editData="tableRowEditable" :modalOn="isEdit" @closeEdit="isEdit = !isEdit"/>
   </div>
 </template>
 
@@ -115,18 +82,17 @@
       isPaginationSimple: false,
       paginationPosition: 'bottom',
       currentPage: 1,
+      isEdit: false,
       perPage: 2,
-      isEditModal: false,
       tableRowEditable: null,
-      searchQuery: ''
     }),
     components: {
       editModal
     },
-    props: ['data', 'tableType'],
+    props: ['data', 'pgCount', 'searchParam'],
     computed: {
       search: function () {
-        let query = this.searchQuery
+        let query = this.searchParam
         if(query) {
           return this.data.filter(function (name) {
             if(name.first_name) {
@@ -142,34 +108,17 @@
     },
     methods: {
       editTableRow (row) {
+        this.isEdit = true
         this.tableRowEditable = row
-        this.isEditModal = !this.isEditModal
       },
       deleteTableRow (row) {
         this.data.splice(row.index, 1)
-      },
-      addDataToTable () {
-        this.$emit('createTableRow')
       }
     }
   }
 </script>
 
 <style lang="scss" scoped>
-.control-panel {
-  display: flex;
-  justify-content: space-between;
-  margin: 30px auto;
-
-  &__left {
-    display: flex;
-  }
-}
-
-.add-btn {
-  margin-right: 15px;
-}
-
 .edit-btn {
   margin-right: 30px;
 }
