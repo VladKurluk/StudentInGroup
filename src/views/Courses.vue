@@ -9,7 +9,8 @@
     <course-table 
       :pgCount="paginationItem"
       :searchParam="searchQuery"
-      :data="data"/>
+      :data="data"
+      @remove="removeCourse"/>
 
     <add-course-modal 
       :actionType="'course'" 
@@ -56,13 +57,42 @@ export default {
   methods: {
     addCourse (course) {
       this.data.push(course)
-      console.log(course)
+      this.saveCourses()
     },
     pgValue (data) {
       this.paginationItem = data
     },
     searchInTable (data) {
       this.searchQuery = data
+    },
+    saveCourses() {
+      const parsed = JSON.stringify(this.data)
+      localStorage.setItem('course', parsed)
+    },
+    removeCourse (courseData) {
+      let courses, vm
+      vm = this
+
+      if (localStorage.getItem('course') === null) {
+        courses = this.data;
+      } else {
+        courses = JSON.parse(localStorage.getItem('course'));
+      }
+
+      courses.forEach(function(course, index) {
+        if (course.course_name === courseData.row.course_name) {
+          courses.splice(index, 1)
+          vm.data.splice(index, 1)
+        }
+      });
+
+      localStorage.setItem('course', JSON.stringify(courses) )
+
+    }
+  },
+  mounted () {
+    if (localStorage.course) {
+      this.data = JSON.parse(localStorage.getItem('course'))
     }
   }
 }

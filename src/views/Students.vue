@@ -9,7 +9,8 @@
     <student-table
       :pgCount="paginationItem"
       :searchParam="searchQuery"
-      :data="data" />
+      :data="data"
+      @remove="removeStudent" />
 
     <add-student-modal 
       :actionType="'student'" 
@@ -37,7 +38,7 @@ const data = [
     email: 'jacobs@mail.ru',
     course: 'JavaScript'
   },
-  { 
+  {
     first_name: 'Tina',
     last_name: 'Gilbert',
     email: 'tinaG@gmail.com',
@@ -62,12 +63,42 @@ export default {
   methods: {
     addStudent (student) {
       this.data.push(student)
+      this.saveStudents()
     },
     pgValue (data) {
       this.paginationItem = data
     },
     searchInTable (data) {
       this.searchQuery = data
+    },
+    saveStudents() {
+      const parsed = JSON.stringify(this.data)
+      localStorage.setItem('students', parsed)
+    },
+    removeStudent (studentData) {
+      let students, vm
+      vm = this
+
+      if (localStorage.getItem('students') === null) {
+        students = this.data;
+      } else {
+        students = JSON.parse(localStorage.getItem('students'));
+      }
+
+      students.forEach(function(student, index) {
+        if (student.email === studentData.row.email) {
+          students.splice(index, 1)
+          vm.data.splice(index, 1)
+        }
+      });
+
+      localStorage.setItem('students', JSON.stringify(students) )
+
+    }
+  },
+  mounted () {
+    if (localStorage.students) {
+      this.data = JSON.parse(localStorage.getItem('students'))
     }
   }
 }

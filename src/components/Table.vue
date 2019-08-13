@@ -13,6 +13,10 @@
       aria-previous-label="Previous page"
       aria-page-label="Page"
       aria-current-label="Current page"
+      :default-sort-direction="defaultSortDirection"
+      :sort-icon="sortIcon"
+      :sort-icon-size="sortIconSize"
+      default-sort="first_name"
       >
 
       <template slot-scope="props">
@@ -20,11 +24,11 @@
           {{ props.index + 1 }}
         </b-table-column>
 
-        <b-table-column v-if="props.row.first_name" field="name" label="Name">
+        <b-table-column v-if="props.row.first_name" field="name" label="Name" sortable>
           {{ props.row.first_name + ' ' + props.row.last_name }}
         </b-table-column>
 
-        <b-table-column v-if="props.row.course_name" field="course_name" label="Course">
+        <b-table-column v-if="props.row.course_name" field="course_name" label="Course" sortable>
           {{ props.row.course_name }}
         </b-table-column>
 
@@ -85,6 +89,10 @@
       isEdit: false,
       perPage: 2,
       tableRowEditable: null,
+      tableType: '',
+      defaultSortDirection: 'asc',
+      sortIcon: 'arrow-up',
+      sortIconSize: 'is-small',
     }),
     components: {
       editModal
@@ -107,13 +115,16 @@
       }
     },
     methods: {
-      editTableRow (row) {
+      editTableRow (rowTable) {
         this.isEdit = true
-        this.tableRowEditable = row
+        this.tableRowEditable = rowTable
       },
       deleteTableRow (row) {
-        this.data.splice(row.index, 1)
-      }
+        this.$emit('remove', row)
+      },
+    },
+    mounted () {
+      this.tableType = this.$router.currentRoute.name
     }
   }
 </script>
